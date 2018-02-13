@@ -1,6 +1,7 @@
 from collections import namedtuple
 from typing import Iterable
 
+import premailer
 import pystache
 from wedding.model import Party
 
@@ -12,23 +13,25 @@ Invitation = namedtuple(
 
 
 def build_invitations(rsvp_template: str,
-                      opened_template: str,
                       body_template: str,
+                      envelope_template: str,
                       party: Party) -> Iterable[Invitation]:
-    rsvp_url   = rsvp_template  .replace('{partyId}', party.id)
-    opened_url = opened_template.replace('{partyId}', party.id)
+    rsvp_url     = rsvp_template    .replace('{partyId}', party.id)
+    envelope_url = envelope_template.replace('{partyId}', party.id)
 
     return (
         Invitation(
             guest.email,
             'Jenny and Jesse are Getting Married!',
-            pystache.render(
-                body_template,
-                {
-                    'partyName': party.title,
-                    'rsvpUrl'  : rsvp_url,
-                    'openedUrl': opened_url
-                }
+            premailer.transform(
+                pystache.render(
+                    body_template,
+                    {
+                        'partyName'  : party.title ,
+                        'rsvpUrl'    : rsvp_url    ,
+                        'envelopeUrl': envelope_url
+                    }
+                )
             )
         )
         for guest in party.guests

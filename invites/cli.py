@@ -32,8 +32,10 @@ class Arguments:
         self.__gimp_path          = args.gimp_path
         self.__gimp_template      = args.gimp_template
         self.__rsvp_url           = args.rsvp_url
-        self.__opened_url         = args.opened_url
         self.__sender             = args.sender
+        self.__envelopes_dir      = args.envelopes_dir
+        self.__envelope_url       = args.envelope_url_template
+        self.__envelope_bucket    = args.envelope_bucket
 
     @property
     def parties_table(self) -> str:
@@ -64,12 +66,20 @@ class Arguments:
         return self.__rsvp_url
 
     @property
-    def opened_url(self) -> str:
-        return self.__opened_url
-
-    @property
     def sender(self) -> EmailAddress:
         return self.__sender
+
+    @property
+    def envelopes_dir(self) -> str:
+        return self.__envelopes_dir
+
+    @property
+    def envelope_url_template(self) -> str:
+        return self.__envelope_url
+
+    @property
+    def envelope_bucket(self) -> str:
+        return self.__envelope_bucket
 
 
 def parse_arguments() -> Arguments:
@@ -111,16 +121,26 @@ def parse_arguments() -> Arguments:
                '"https://www.flyingjs4.life/{partyId}/rsvp"'
     )
     parser.add_argument(
-        '--opened-url',
-        env_var = 'OPENED_URL',
-        help = 'URL template for email-opened event. ' +
-               'Must include "{partyId}" placeholder, e.g. ' +
-               '"https://www.flyingjs4.life/{partyId}/opened"'
-    )
-    parser.add_argument(
         '--sender',
         env_var = 'SENDER',
         help = 'Email address to use to send invitations.',
         type = _email_address
+    )
+    parser.add_argument(
+        '--envelopes-dir',
+        env_var = 'ENVELOPES_DIR',
+        help = 'Directory where envelope images will be saved.'
+    )
+    parser.add_argument(
+        '--envelope-bucket',
+        env_var = 'ENVELOPE_BUCKET',
+        help = 'Name of S3 bucket to upload envelope images to.'
+    )
+    parser.add_argument(
+        '--envelope-url-template',
+        env_var = 'ENVELOPE_URL_TEMPLATE',
+        help = 'URL template for envelope images. ' +
+               'Must include "{partyId}" placeholder, e.g. ' +
+               '"https://www.flyingjs4.life/envelopes/{partyId}.png"'
     )
     return Arguments(parser.parse_args())

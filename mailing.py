@@ -5,6 +5,7 @@ import boto3
 from invites.cli import parse_arguments, Arguments
 from invites.model import build_invitations
 from invites.google import get_credentials, GmailService, gmail_service
+from invites.aws import upload_envelopes
 from invites import render
 
 
@@ -12,27 +13,30 @@ def main(args: Arguments,
          parties: Store[str, Party],
          gmail: GmailService):
 
-    #invitations = (
-    #    invitation
-    #    for party in parties.get_all()
-    #    if party.inviter == args.sender
-    #    for invitation in build_invitations(
-    #        args.rsvp_url,
-    #        args.opened_url,
-    #        args.html_template,
-    #        party
-    #    )
-    #)
-
     render_envelopes = render.EnvelopeRenderer(
         args.gimp_path,
         args.gimp_template,
-        '/Users/jesse/Pictures/envelopes'
+        args.envelopes_dir
     )
+
     render_envelopes(parties.get_all())
 
-    #for invitation in invitations:
-    #    gmail.create_draft(render.base64_email(args.sender, invitation))
+    upload_envelopes(args.envelopes_dir, args.envelope_bucket)
+
+    invitations = (
+        invitation
+        for party in parties.get_all()
+        if party.inviter == args.sender
+        for invitation in build_invitations(
+            args.rsvp_url,
+            args.html_template,
+            args.envelope_url_template,
+            party
+        )
+    )
+
+    for invitation in invitations:
+        gmail.create_draft(render.base64_email(args.sender, invitation))
 
 
 if __name__ == '__main__':

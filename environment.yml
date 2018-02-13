@@ -16,3 +16,4 @@ dependencies:
   - google-auth-oauthlib==0.2.0
   - oauthlib==2.0.6
   - pystache==0.5.4
+  - premailer==3.1.1
