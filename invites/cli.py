@@ -31,7 +31,7 @@ class Arguments:
         self.__html_template      = args.html_template
         self.__gimp_path          = args.gimp_path
         self.__gimp_template      = args.gimp_template
-        self.__rsvp_url           = args.rsvp_url
+        self.__invitation_url     = args.invitation_url
         self.__sender             = args.sender
         self.__envelopes_dir      = args.envelopes_dir
         self.__envelope_url       = args.envelope_url_template
@@ -62,8 +62,8 @@ class Arguments:
         return self.__gimp_template
 
     @property
-    def rsvp_url(self) -> str:
-        return self.__rsvp_url
+    def invitation_url(self) -> str:
+        return self.__invitation_url
 
     @property
     def sender(self) -> EmailAddress:
@@ -114,11 +114,11 @@ def parse_arguments() -> Arguments:
         env_var = 'GIMP_TEMPLATE'
     )
     parser.add_argument(
-        '--rsvp-url',
+        '--invitation-url',
         env_var = 'RSVP_URL',
         help = 'URL template for party RSVP. ' +
-               'Must include "{partyId}" placeholder, e.g. ' +
-               '"https://www.flyingjs4.life/{partyId}/rsvp"'
+               'Must include "{partyId}" and "{guestId}" placeholders, e.g. ' +
+               '"https://www.flyingjs4.life/invitation?party={partyId}&guest={guestId}"'
     )
     parser.add_argument(
         '--sender',

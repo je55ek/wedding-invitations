@@ -1,5 +1,7 @@
+import urllib.parse
 from collections import namedtuple
 from typing import Iterable
+from toolz.functoolz import partial
 
 import premailer
 import pystache
@@ -12,12 +14,25 @@ Invitation = namedtuple(
 )
 
 
-def build_invitations(rsvp_template: str,
+def _url_sub(field: str,
+             value: str,
+             url  : str) -> str:
+    return url.replace(
+        field,
+        urllib.parse.quote(value)
+    )
+
+
+_substitute_party = partial(_url_sub, '{partyId}')
+_substitute_guest = partial(_url_sub, '{guestId}')
+
+
+def build_invitations(invitation_template: str,
                       body_template: str,
                       envelope_template: str,
                       party: Party) -> Iterable[Invitation]:
-    rsvp_url     = rsvp_template    .replace('{partyId}', party.id)
-    envelope_url = envelope_template.replace('{partyId}', party.id)
+    invitation_url = _substitute_party(party.id, invitation_template)
+    envelope_url   = _substitute_party(party.id, envelope_template)
 
     return (
         Invitation(
@@ -27,9 +42,9 @@ def build_invitations(rsvp_template: str,
                 pystache.render(
                     body_template,
                     {
-                        'partyName'  : party.title ,
-                        'rsvpUrl'    : rsvp_url    ,
-                        'envelopeUrl': envelope_url
+                        'partyName'    : party.title ,
+                        'invitationUrl': _substitute_guest(guest.id, invitation_url),
+                        'envelopeUrl'  : envelope_url
                     }
                 )
             )

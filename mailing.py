@@ -28,7 +28,7 @@ def main(args: Arguments,
         for party in parties.get_all()
         if party.inviter == args.sender
         for invitation in build_invitations(
-            args.rsvp_url,
+            args.invitation_url,
             args.html_template,
             args.envelope_url_template,
             party
