@@ -61,6 +61,12 @@ class GmailService:
             body   = { 'message': { 'raw': message } }
         ).execute()
 
+    def send(self, draft):
+        return self.__service.users().drafts.send(
+            userId = self.__user_id,
+            body   = draft
+        )
+
 
 def gmail_service(credentials: Credentials,
                   sender: EmailAddress) -> GmailService:

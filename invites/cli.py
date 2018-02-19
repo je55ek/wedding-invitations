@@ -35,7 +35,11 @@ class Arguments:
         self.__sender             = args.sender
         self.__envelopes_dir      = args.envelopes_dir
         self.__envelope_url       = args.envelope_url_template
-        self.__envelope_bucket    = args.envelope_bucket
+        self.__resource_bucket    = args.resource_bucket
+        self.__envelope_prefix    = args.envelope_prefix
+        self.__send               = args.send
+        self.__skip_envelopes     = args.skip_envelopes
+        self.__skip_email         = args.skip_email
 
     @property
     def parties_table(self) -> str:
@@ -78,8 +82,24 @@ class Arguments:
         return self.__envelope_url
 
     @property
-    def envelope_bucket(self) -> str:
-        return self.__envelope_bucket
+    def resource_bucket(self) -> str:
+        return self.__resource_bucket
+
+    @property
+    def envelope_prefix(self) -> str:
+        return self.__envelope_prefix
+
+    @property
+    def send(self) -> bool:
+        return self.__send
+
+    @property
+    def skip_envelopes(self) -> bool:
+        return self.__skip_envelopes
+
+    @property
+    def skip_email(self) -> bool:
+        return self.__skip_email
 
 
 def parse_arguments() -> Arguments:
@@ -132,9 +152,14 @@ def parse_arguments() -> Arguments:
         help = 'Directory where envelope images will be saved.'
     )
     parser.add_argument(
-        '--envelope-bucket',
-        env_var = 'ENVELOPE_BUCKET',
-        help = 'Name of S3 bucket to upload envelope images to.'
+        '--resource-bucket',
+        env_var = 'RESOURCE_BUCKET',
+        help = 'Name of S3 bucket where static resources are stored.'
+    )
+    parser.add_argument(
+        '--envelope-prefix',
+        env_var = 'ENVELOPE_PREFIX',
+        help = 'Prefix of all envelope objects in resource bucket.'
     )
     parser.add_argument(
         '--envelope-url-template',
@@ -142,5 +167,20 @@ def parse_arguments() -> Arguments:
         help = 'URL template for envelope images. ' +
                'Must include "{partyId}" placeholder, e.g. ' +
                '"https://www.flyingjs4.life/envelopes/{partyId}.png"'
+    )
+    parser.add_argument(
+        '--send',
+        action = 'store_true',
+        help = 'Send emails. USE ONLY WHEN ABSOLUTELY READY TO INVITE EVERYONE!'
+    )
+    parser.add_argument(
+        '--skip-envelopes',
+        action = 'store_true',
+        help = 'Do not render envelopes'
+    )
+    parser.add_argument(
+        '--skip-email',
+        action = 'store_true',
+        help = 'Do not create or send email invitations'
     )
     return Arguments(parser.parse_args())
