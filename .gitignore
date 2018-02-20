@@ -4,3 +4,5 @@ secrets/
 settings.conf
 resources/envelopes/
 addresses.csv
+parties.html
+parties.json

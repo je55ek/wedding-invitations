@@ -120,7 +120,7 @@ def parse_arguments() -> Arguments:
     )
     parser.add_argument(
         '--html-template',
-        default = 'resources/template.html',
+        default = 'resources/email_template.html',
         env_var = 'TEMPLATE',
         type    = _template
     )

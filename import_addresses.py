@@ -5,13 +5,14 @@ import uuid
 from typing import Iterable, Dict
 
 import boto3
+from botocore.exceptions import ClientError
+import pystache
 from toolz import reduceby, first, compose, curry
 from toolz.curried import get
 from wedding.general.functional import option
 from wedding.model import party_store, Party, Guest, NotInvited, PartyCodec, EmailAddress
 
 from invites.cli import parse_email_address
-
 
 TITLE_FIELD   = 'Title'
 EMAIL_FIELD   = 'Email'
@@ -37,7 +38,9 @@ def parse_bool(s: str) -> bool:
 
 
 def main(args):
+    write_to_html = write_party_html(args.html_template)
     compose(
+        option.cata(write_to_html   , lambda: identity)(args.html_output  ),
         option.cata(post_to_database, lambda: identity)(args.parties_table),
         option.cata(write_party_json, lambda: identity)(args.write_json   ),
         parse_parties,
@@ -48,8 +51,10 @@ def main(args):
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--address-file', default = 'addresses.csv')
+    parser.add_argument('--html-template', default = 'resources/parties_template.html')
     parser.add_argument('--parties-table')
     parser.add_argument('--write-json')
+    parser.add_argument('--html-output')
     return parser.parse_args()
 
 
@@ -117,12 +122,30 @@ def write_party_json(filename: str,
 
 
 @curry
+def write_party_html(template_filename: str,
+                     output_filename: str,
+                     parties: Iterable[Party]) -> None:
+    with open(template_filename, 'r') as fin, open(output_filename, 'w') as fout:
+        fout.write(
+            pystache.render(
+                fin.read(),
+                { 'parties': parties }
+            )
+        )
+
+
+
+@curry
 def post_to_database(table_name: str,
                      parties: Iterable[Party]) -> None:
     store = party_store(
         boto3.resource('dynamodb').Table(table_name)
     )
-    store.put_all(parties)
+    for party in parties:
+        try:
+            store.put(party)
+        except ClientError as exc:
+            print(f'Unable to put party {party.title} in database: {exc}')
 
 
 if __name__ == '__main__':

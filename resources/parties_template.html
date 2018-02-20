@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parties</title>
+    <link rel="stylesheet" type="text/css" href="resources/parties_template.css">
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <h1>Flying Js Wedding Guestlist</h1>
+        </div>
+        <div id="body">
+            <table id="parties">
+            {{#parties}}
+                <tr class="party">
+                    <td class="party-emoji"><h1>{{#local}}🦇{{/local}}{{^local}}✈️{{/local}}</h1></td>
+                    <td>
+                        <h1 class="title">{{title}}</h1>
+                        <p class="id">{{id}}</p>
+                        <table class="party-metadata">
+                            <tr>
+                                <td class="fieldname">Invited by</td>
+                                <td class="fieldvalue">{{inviter.username}}@{{inviter.hostname}}</td>
+                            </tr>
+                            <tr>
+                                <td class="fieldname">RSVP Stage</td>
+                                <td class="fieldvalue">{{rsvp_stage.shows}}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="guests">
+                        <table>
+                        {{#guests}}
+                            <tr>
+                                <td class="emoji"><p>{{#attending}}🎉{{/attending}}{{^attending}}❓{{/attending}}</p></td>
+                                <td class="emoji"><p>{{#rideshare}}🚘{{/rideshare}}{{^rideshare}}❓{{/rideshare}}</p></td>
+                                <td class="guest">
+                                    <p class="name">{{first_name}} {{last_name}}</p>
+                                    <p class="email">{{email.username}}@{{email.hostname}}</p>
+                                    <p class="id">{{id}}</p>
+                                </td>
+                            </tr>
+                        {{/guests}}
+                        </table>
+                    </td>
+                </tr>
+            {{/parties}}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
