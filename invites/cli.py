@@ -4,7 +4,7 @@ from configargparse import ArgumentTypeError, ArgParser
 from wedding.model import EmailAddress
 
 
-def _email_address(raw: str) -> EmailAddress:
+def parse_email_address(raw: str) -> EmailAddress:
     if len(raw) > 7:
         match = re.match(
             "^([_a-z0-9-]+(?:\.[_a-z0-9-]+)*)@([a-z0-9-]+(?:\.[a-z0-9-]+)*(?:\.[a-z]{2,4}))$",
@@ -144,7 +144,7 @@ def parse_arguments() -> Arguments:
         '--sender',
         env_var = 'SENDER',
         help = 'Email address to use to send invitations.',
-        type = _email_address
+        type = parse_email_address
     )
     parser.add_argument(
         '--envelopes-dir',
