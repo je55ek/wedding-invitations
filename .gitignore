@@ -3,3 +3,4 @@ __pycache__/
 secrets/
 settings.conf
 resources/envelopes/
+addresses.csv
