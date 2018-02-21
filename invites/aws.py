@@ -1,4 +1,5 @@
 from os import listdir, path
+import string
 
 import boto3
 from botocore.exceptions import ClientError
@@ -49,7 +50,7 @@ def upload_envelopes(envelope_dir: str,
                         'TagSet': [
                             {
                                 'Key': 'party',
-                                'Value': party.title
+                                'Value': ''.join(filter(lambda c: c in string.ascii_letters, party.title))[:256]
                             }
                         ]
                     }
