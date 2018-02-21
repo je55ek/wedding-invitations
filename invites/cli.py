@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from configargparse import ArgumentTypeError, ArgParser
 from wedding.model import EmailAddress
@@ -40,6 +41,7 @@ class Arguments:
         self.__send               = args.send
         self.__skip_envelopes     = args.skip_envelopes
         self.__skip_email         = args.skip_email
+        self.__whitelist          = args.whitelist
 
     @property
     def parties_table(self) -> str:
@@ -100,6 +102,10 @@ class Arguments:
     @property
     def skip_email(self) -> bool:
         return self.__skip_email
+
+    @property
+    def whitelist(self) -> List[str]:
+        return self.__whitelist
 
 
 def parse_arguments() -> Arguments:
@@ -182,5 +188,11 @@ def parse_arguments() -> Arguments:
         '--skip-email',
         action = 'store_true',
         help = 'Do not create or send email invitations'
+    )
+    parser.add_argument(
+        '--whitelist',
+        action = 'append',
+        help = 'A list of party IDs to include in the mailing',
+        default = []
     )
     return Arguments(parser.parse_args())

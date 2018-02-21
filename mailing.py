@@ -2,6 +2,7 @@ from wedding.model import party_store, Party, EmailSent
 from wedding.general.store import Store
 import boto3
 import sys
+import traceback
 
 from invites.cli import parse_arguments, Arguments
 from invites.model import build_invitations
@@ -18,7 +19,7 @@ def _create_envelopes(args: Arguments,
         args.envelopes_dir
     )
 
-    render_envelopes(parties.get_all())
+    render_envelopes(parties.get(id) for id in args.whitelist)
 
     upload_envelopes(
         args.envelopes_dir,
@@ -33,7 +34,7 @@ def _create_emails(args: Arguments,
                    gmail: GmailService):
     senders_parties = filter(
         lambda party: party.inviter == args.sender,
-        parties.get_all()
+        map(parties.get, args.whitelist)
     )
 
     for party in senders_parties:
@@ -49,6 +50,7 @@ def _create_emails(args: Arguments,
                 draft = gmail.create_draft(render.base64_email(args.sender, invitation))
             except Exception as exc:
                 print(f'Unable to create draft for party {party.id} ({party.title}): {exc}')
+                traceback.print_exc()
                 continue
             else:
                 if args.send:
@@ -80,6 +82,10 @@ def main(args: Arguments,
 
 if __name__ == '__main__':
     args = parse_arguments()
+
+    if len(args.whitelist) == 0:
+        print('No party IDs, nothing to do.')
+        sys.exit(0)
 
     if args.send and not args.skip_email:
         answer = input("Are you sure you are ready to send invitations? (y/n): ")
