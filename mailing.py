@@ -19,7 +19,10 @@ def _create_envelopes(args: Arguments,
         args.envelopes_dir
     )
 
-    render_envelopes(parties.get(id) for id in args.whitelist)
+    render_envelopes(
+        parties.get_all() if len(args.only) == 0 else
+        map(parties.get, args.only)
+    )
 
     upload_envelopes(
         args.envelopes_dir,
@@ -34,7 +37,7 @@ def _create_emails(args: Arguments,
                    gmail: GmailService):
     senders_parties = filter(
         lambda party: party.inviter == args.sender,
-        map(parties.get, args.whitelist)
+        parties.get_all() if len(args.only) == 0 else map(parties.get, args.only)
     )
 
     for party in senders_parties:
@@ -82,10 +85,6 @@ def main(args: Arguments,
 
 if __name__ == '__main__':
     args = parse_arguments()
-
-    if len(args.whitelist) == 0:
-        print('No party IDs, nothing to do.')
-        sys.exit(0)
 
     if args.send and not args.skip_email:
         answer = input("Are you sure you are ready to send invitations? (y/n): ")

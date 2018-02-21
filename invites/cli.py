@@ -41,7 +41,7 @@ class Arguments:
         self.__send               = args.send
         self.__skip_envelopes     = args.skip_envelopes
         self.__skip_email         = args.skip_email
-        self.__whitelist          = args.whitelist
+        self.__only               = args.only
 
     @property
     def parties_table(self) -> str:
@@ -104,8 +104,8 @@ class Arguments:
         return self.__skip_email
 
     @property
-    def whitelist(self) -> List[str]:
-        return self.__whitelist
+    def only(self) -> List[str]:
+        return self.__only
 
 
 def parse_arguments() -> Arguments:
@@ -190,9 +190,9 @@ def parse_arguments() -> Arguments:
         help = 'Do not create or send email invitations'
     )
     parser.add_argument(
-        '--whitelist',
+        '--only',
         action = 'append',
-        help = 'A list of party IDs to include in the mailing',
+        help = 'Only operate on the parties with these IDs',
         default = []
     )
     return Arguments(parser.parse_args())
