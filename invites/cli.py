@@ -1,4 +1,5 @@
 import re
+import string
 from typing import List
 
 from configargparse import ArgumentTypeError, ArgParser
@@ -8,8 +9,8 @@ from wedding.model import EmailAddress
 def parse_email_address(raw: str) -> EmailAddress:
     if len(raw) > 7:
         match = re.match(
-            "^([_a-z0-9-]+(?:\.[_a-z0-9-]+)*)@([a-z0-9-]+(?:\.[a-z0-9-]+)*(?:\.[a-z]{2,4}))$",
-            raw.lower()
+            "^([a-zA-Z0-9_.+-]+)@([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$",
+            raw.lower().lstrip(string.whitespace).rstrip(string.whitespace)
         )
         if match:
             return EmailAddress(match.group(1), match.group(2))
