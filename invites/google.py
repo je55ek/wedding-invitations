@@ -62,10 +62,10 @@ class GmailService:
         ).execute()
 
     def send(self, draft):
-        return self.__service.users().drafts.send(
+        return self.__service.users().drafts().send(
             userId = self.__user_id,
             body   = draft
-        )
+        ).execute()
 
 
 def gmail_service(credentials: Credentials,

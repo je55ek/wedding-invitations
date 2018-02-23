@@ -55,13 +55,13 @@ def _create_emails(args: Arguments,
                 print(f'Unable to create draft for party {party.id} ({party.title}): {exc}')
                 traceback.print_exc()
                 continue
-            else:
-                if args.send:
-                    try:
-                        gmail.send(draft)
-                    except Exception as e:
-                        print(f'Unable to send email for party {party.id} ({party.title}): {e}')
-                        continue
+
+            if args.send:
+                try:
+                    gmail.send(draft)
+                except Exception as e:
+                    print(f'Unable to send email for party {party.id} ({party.title}): {e}')
+                    continue
 
         try:
             parties.modify(
